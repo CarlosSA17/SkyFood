@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+    <h:head>
+        <title>SkyFood - Sistema de Ventas</title>
+        <f:event listener="#{ventaC.listaFiltrada()}" type="preRenderView" />
+    </h:head>
+    <h:body>
+
+        <h:form style="margin-bottom: 15px">
+            <p:commandButton id="dynaButton" value="Mostrar Apartados" type="button" icon="pi pi-home"/>
+            <p:slideMenu overlay="true" trigger="dynaButton" my="left top" at="left bottom" style="width:180px">
+                <p:submenu label="Personas" icon="pi pi-users">
+                    <p:menuitem value="Empleados" outcome="Empleado" update="messages" icon="pi pi-shopping-cart"/>
+                    <p:menuitem value="Clientes" outcome="Cliente" update="messages" icon="pi pi-chart-line"/>
+                </p:submenu>
+                <p:submenu label="Acciones" icon="pi pi-sliders-h">
+                    <p:menuitem value="Ventas" outcome="Venta" update="messages" icon="pi pi-refresh"/>
+                </p:submenu>
+                <p:submenu label="Carta" icon="pi pi-tags">
+                    <p:menuitem value="Menú" outcome="Menu" update="messages" icon="pi pi-save"/>
+                    <p:menuitem value="Platillo" outcome="Platillo" update="messages" icon="pi pi-refresh"/>
+                </p:submenu>
+            </p:slideMenu>
+        </h:form>
+
+        <!--Menu de las capas-->
+        
+        <h1 style="text-align: center">VENTAS</h1>
+        <h:form id="formVenta">
+            <p:panelGrid columns="2" style="align-content: center;align-items: center;text-align: center"> 
+                <p:outputLabel value="Fecha"/>
+                <p:calendar id="button" value="#{ventaC.ventModel.fechaVen}" showOn="button"/>
+                <p:outputLabel value="Empleado"/>
+                <p:selectOneMenu id ="idEmpleado" value="#{ventaC.ventModel.idEmp}" filter="true" filterMatchMode="startsWith">
+                    <f:selectItem itemValue ="" itemLabel="-SELECCIONAR-"/>
+                    <f:selectItems value="#{ventaC.listaEmp}" var ="cli" itemLabel="#{cli.nomEmpleados}" itemValue="#{cli.fkEmpleados}"/>
+                </p:selectOneMenu>
+                <p:outputLabel value="cliente"/>
+                <p:selectOneMenu id ="idClientes" value="#{ventaC.ventModel.idClien}" filter="true" filterMatchMode="startsWith">
+                    <f:selectItem itemValue ="" itemLabel="-SELECCIONAR-"/>
+                    <f:selectItems value="#{ventaC.listaCli}" var ="cli" itemLabel="#{cli.nomCliente}" itemValue="#{cli.fkCliente}"/>
+                </p:selectOneMenu>
+
+                <p:outputLabel value="estado"/>
+                <p:selectOneMenu id="option" value="#{ventaC.ventModel.estado}">
+                    <f:selectItem itemValue ="" itemLabel="-SELECCIONAR-"/>
+                    <f:selectItem itemValue ="A" itemLabel="ACTIVO"/>
+                    <f:selectItem itemValue ="I" itemLabel="INACTIVO"/>
+                </p:selectOneMenu>
+                <p:commandButton value="registrar" actionListener="#{ventaC.registrar()}" update="formVenta :formTblVenta:tblVenta"/>
+
+            </p:panelGrid>
+        </h:form>
+        <h:form id="formTblVenta"> 
+            <p:dataTable id="tblVenta"
+                         var="venta"
+                         value="#{ventaC.listaFiltrado}"
+                         selection="#{ventaC.ventModel}"
+                         selectionMode="single"
+                         rowKey="#{venta.idventa}"
+                         paginator="true"
+                         paginatorTemplate=" {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15">
+                <p:column headerText="empleado" sortBy="#{venta.empleadoFiltrado}" filterBy="#{venta.empleadoFiltrado}">
+                    <h:outputText value="#{venta.empleadoFiltrado}"/>
+                </p:column>
+                <p:column headerText="cliente" sortBy="#{venta.clienteFiltrado}" filterBy="#{venta.clienteFiltrado}">
+                    <h:outputText value="#{venta.clienteFiltrado}"/>
+                </p:column>
+                <p:column headerText="fecha" sortBy="#{venta.fechaVen}" filterBy="#{venta.fechaVen}">
+                    <h:outputText value="#{venta.fechaVen}"/>
+                </p:column>
+                <p:column headerText="estado" sortBy="#{venta.estadoFiltrado}" filterBy="#{venta.estadoFiltrado}">
+                    <h:outputText value="#{venta.estadoFiltrado}"/>
+                </p:column>
+                <f:facet name="footer">
+                    EN TOTAL HAY #{fn:length(ventaC.listaFiltrado)} REGISTROS.
+                </f:facet>
+            </p:dataTable>
+            <p:contextMenu for="tblVenta">
+                <p:menuitem value="MODIFICAR" oncomplete="PF('wdlgDatos').show()" update=":formDialog"/>
+                <p:menuitem value="ELIMINAR" actionListener="#{ventaC.eliminar()}" update="tblVenta"> 
+                    <p:confirm header="CONFIRMACIÓN" message="¿Está seguro de eliminar este registro?"/>
+                </p:menuitem>
+            </p:contextMenu>
+        </h:form>
+        <p:dialog header="ACTUALIZAR DATOS" widgetVar="wdlgDatos" resizable="false" modal="true">
+            <h:form id="formDialog">
+                <p:panelGrid columns="2"> 
+                    <p:outputLabel value="Fecha"/>
+                    <p:calendar id="button" value="#{ventaC.ventModel.fechaVen}" showOn="button"/>
+                    <p:outputLabel value="Empleado"/>
+                    <p:selectOneMenu id ="idEmpleado" value="#{ventaC.ventModel.idEmp}" filter="true" filterMatchMode="startsWith">
+                        <f:selectItem itemValue ="" itemLabel="-SELECCIONAR-"/>
+                        <f:selectItems value="#{ventaC.listaEmp}" var ="cli" itemLabel="#{cli.nomEmpleados}" itemValue="#{cli.fkEmpleados}"/>
+                    </p:selectOneMenu>
+                    <p:outputLabel value="cliente"/>
+                    <p:selectOneMenu id ="idClientes" value="#{ventaC.ventModel.idClien}" filter="true" filterMatchMode="startsWith">
+                        <f:selectItem itemValue ="" itemLabel="-SELECCIONAR-"/>
+                        <f:selectItems value="#{ventaC.listaCli}" var ="cli" itemLabel="#{cli.nomCliente}" itemValue="#{cli.fkCliente}"/>
+                    </p:selectOneMenu>
+                    <p:outputLabel value="estado"/>
+                    <p:selectOneMenu id="option" value="#{ventaC.ventModel.estado}">
+                        <f:selectItem itemValue ="" itemLabel="-SELECCIONAR-"/>
+                        <f:selectItem itemValue ="A" itemLabel="ACTIVO"/>
+                        <f:selectItem itemValue ="I" itemLabel="INACTIVO"/>
+                    </p:selectOneMenu>
+                    <p:commandButton value="MODIFICAR" actionListener="#{ventaC.modificar()}" update=":formTblVenta:tblVenta" oncomplete="PF('wdlgDatos').hide()"/>
+                    <p:commandButton value="ELIMINAR" oncomplete="PF('wdlgDatos').hide()"/>
+
+                </p:panelGrid>  
+            </h:form>
+        </p:dialog>
+        <h:form>
+            <p:confirmDialog global="true">
+                <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes"/>
+                <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no"/>
+            </p:confirmDialog>
+        </h:form>
+
+    </h:body>
+</html>

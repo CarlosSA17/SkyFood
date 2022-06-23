@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      lang="en">
+    <link rel="stylesheet" type="text/css" href="DiseñoIntro.css"/>
+    <h:head>
+        <title>SkyFood - Sistema de Ventas</title>
+    </h:head>
+    <h:body>
+        <label id="titulointro">Bienvenido</label>
+        <h:graphicImage id="logo" url="/image/logito.png" style="width: 250px"/>
+        <h:form>
+            <p:button outcome="Empleado" value="Comenzemos!!!" icon="pi pi-heart-fill"
+                      style="margin-right:20px; color: black; background: white; border-color: transparent; border-radius: 30px">
+            </p:button>
+        </h:form>
+    </h:body>
+    <h:outputScript library="js" name="..//resources/js/spanishLocales.js"/>
+</html>
